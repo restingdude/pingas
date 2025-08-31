@@ -495,24 +495,47 @@ document.getElementById('app').innerHTML = `
                                 <label>Supplement</label>
                                 <select id="regime-supplement" required>
                                     <option value="">Select supplement...</option>
-                                    <option value="nmn">NMN</option>
-                                    <option value="fisetin">Fisetin</option>
-                                    <option value="ca-akg">Ca-AKG</option>
-                                    <option value="ashwagandha">Ashwagandha</option>
-                                    <option value="rhodiola">Rhodiola</option>
-                                    <option value="creatine">Creatine</option>
-                                    <option value="nac">NAC</option>
-                                    <option value="omega-3">Omega-3</option>
-                                    <option value="taurine">Taurine</option>
-                                    <option value="vitamin-d3">Vitamin D3</option>
-                                    <option value="magnesium">Magnesium</option>
-                                    <option value="collagen">Collagen Peptides</option>
-                                    <option value="hyaluronic-acid">Hyaluronic Acid</option>
-                                    <option value="turmeric">Turmeric/Curcumin</option>
-                                    <option value="zinc">Zinc</option>
-                                    <option value="b12">Vitamin B12</option>
-                                    <option value="garlic">Garlic</option>
-                                    <option value="coq10">CoQ10</option>
+                                    
+                                    <optgroup label="Anti-Aging & Longevity">
+                                        <option value="nmn">NMN (Nicotinamide Mononucleotide)</option>
+                                        <option value="fisetin">Fisetin</option>
+                                        <option value="ca-akg">Calcium Alpha-Ketoglutarate</option>
+                                    </optgroup>
+                                    
+                                    <optgroup label="Brain & Focus">
+                                        <option value="lions-mane">Lion's Mane Mushroom</option>
+                                    </optgroup>
+                                    
+                                    <optgroup label="Stress & Adaptation">
+                                        <option value="ashwagandha">Ashwagandha</option>
+                                        <option value="rhodiola">Rhodiola Rosea</option>
+                                    </optgroup>
+                                    
+                                    <optgroup label="Performance & Recovery">
+                                        <option value="creatine">Creatine Monohydrate</option>
+                                        <option value="taurine">Taurine</option>
+                                    </optgroup>
+                                    
+                                    <optgroup label="Essential Nutrients">
+                                        <option value="vitamin-d3">Vitamin D3</option>
+                                        <option value="magnesium">Magnesium Glycinate</option>
+                                        <option value="omega-3">Omega-3 (EPA/DHA)</option>
+                                    </optgroup>
+                                    
+                                    <optgroup label="Antioxidants">
+                                        <option value="curcumin">Curcumin (Turmeric)</option>
+                                        <option value="quercetin">Quercetin</option>
+                                        <option value="nac">N-Acetyl Cysteine (NAC)</option>
+                                    </optgroup>
+                                    
+                                    <optgroup label="Beauty & Aesthetics">
+                                        <option value="collagen">Collagen Peptides</option>
+                                        <option value="hyaluronic-acid">Hyaluronic Acid</option>
+                                    </optgroup>
+                                    
+                                    <optgroup label="Heart & Circulation">
+                                        <option value="coq10">Coenzyme Q10</option>
+                                    </optgroup>
                                 </select>
                             </div>
                             <div class="form-group">
