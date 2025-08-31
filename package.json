@@ -1,0 +1,25 @@
+{
+  "name": "pingas-supplement-tracker",
+  "version": "1.0.0",
+  "description": "A supplement tracking application with stats and insights",
+  "main": "index.html",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "keywords": [
+    "supplement",
+    "tracker",
+    "health",
+    "wellness"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "vite": "^5.0.0"
+  },
+  "dependencies": {
+    "@vercel/kv": "^3.0.0"
+  }
+}

@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pingas - Supplement Tracker</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo">
+                <h1>Pingas</h1>
+                <span class="tagline">Supplement Tracker</span>
+            </div>
+            <ul class="nav-links">
+                <li><a href="#dashboard">Dashboard</a></li>
+                <li><a href="#tracker">Track</a></li>
+                <li><a href="#supplements">My Supplements</a></li>
+                <li><a href="#stats">Stats</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section id="dashboard" class="hero">
+            <div class="hero-content">
+                <h2>Track Your Supplements</h2>
+                <p>Monitor your daily intake and see your health stats</p>
+                <button class="cta-button" onclick="scrollToSection('tracker')">Start Tracking</button>
+            </div>
+        </section>
+
+        <section id="tracker" class="tracker">
+            <div class="container">
+                <h2>Daily Supplement Tracker</h2>
+                <div class="tracker-content">
+                    <form id="supplement-form" class="supplement-form">
+                        <div class="form-row">
+                            <input type="text" id="supplement-name" placeholder="Supplement Name" required>
+                            <input type="number" id="supplement-dosage" placeholder="Dosage (mg)" required>
+                            <select id="supplement-time" required>
+                                <option value="">Select Time</option>
+                                <option value="morning">Morning</option>
+                                <option value="afternoon">Afternoon</option>
+                                <option value="evening">Evening</option>
+                                <option value="night">Night</option>
+                            </select>
+                            <button type="submit">Add Entry</button>
+                        </div>
+                    </form>
+                    <div class="today-log">
+                        <h3>Today's Log</h3>
+                        <div id="today-entries" class="entries-list">
+                            <!-- Entries will be added here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="supplements" class="supplements">
+            <div class="container">
+                <h2>My Supplements</h2>
+                <div class="supplements-grid">
+                    <div class="add-supplement-card">
+                        <h3>Add New Supplement</h3>
+                        <form id="new-supplement-form">
+                            <input type="text" id="new-supplement-name" placeholder="Supplement Name" required>
+                            <input type="text" id="new-supplement-brand" placeholder="Brand (optional)">
+                            <textarea id="new-supplement-notes" placeholder="Notes (optional)" rows="3"></textarea>
+                            <button type="submit">Add to Library</button>
+                        </form>
+                    </div>
+                    <div class="supplement-library">
+                        <h3>Your Supplement Library</h3>
+                        <div id="supplement-list" class="supplement-list">
+                            <!-- Supplement cards will be added here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="stats" class="stats">
+            <div class="container">
+                <h2>Your Stats</h2>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <h3>Today</h3>
+                        <div class="stat-value" id="today-count">0</div>
+                        <p>Supplements Taken</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>This Week</h3>
+                        <div class="stat-value" id="week-count">0</div>
+                        <p>Total Entries</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>This Month</h3>
+                        <div class="stat-value" id="month-count">0</div>
+                        <p>Total Entries</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Consistency</h3>
+                        <div class="stat-value" id="consistency">0%</div>
+                        <p>Daily Tracking</p>
+                    </div>
+                </div>
+                <div class="chart-container">
+                    <h3>Weekly Overview</h3>
+                    <div id="weekly-chart" class="weekly-chart">
+                        <!-- Chart will be rendered here -->
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 Pingas Supplement Tracker. All rights reserved.</p>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
