@@ -183,42 +183,43 @@ class RegimeManager {
     // Setup event listeners
     setupEventListeners() {
         const regimeForm = document.getElementById('regime-form');
-        const supplementSelect = document.getElementById('regime-supplement');
+        const supplementHiddenInput = document.getElementById('regime-supplement');
         const dosageInput = document.getElementById('regime-dosage');
         const unitSelect = document.getElementById('regime-unit');
 
-        if (!regimeForm || !supplementSelect) return;
-
-        // Auto-fill recommended dosage when supplement is selected
-        supplementSelect.addEventListener('change', (e) => {
-            const supplementKey = e.target.value;
-            if (!supplementKey) return;
-
-            const recommended = getRecommendedDosage(supplementKey, 'medium');
-            if (recommended && dosageInput) {
-                dosageInput.value = recommended.min;
-                if (unitSelect) {
-                    unitSelect.value = recommended.unit;
-                }
-            }
-        });
+        if (!regimeForm || !supplementHiddenInput) return;
 
         // Handle form submission
         regimeForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             
-            const formData = new FormData(regimeForm);
             const supplementData = {
-                supplement: formData.get('supplement') || supplementSelect.value,
-                dosage: formData.get('dosage') || dosageInput.value,
-                unit: formData.get('unit') || unitSelect.value,
-                timing: formData.get('timing') || document.getElementById('regime-timing')?.value,
-                frequency: formData.get('frequency') || document.getElementById('regime-frequency')?.value
+                supplement: supplementHiddenInput.value,
+                dosage: dosageInput?.value,
+                unit: unitSelect?.value || 'mg',
+                timing: document.getElementById('regime-timing')?.value,
+                frequency: document.getElementById('regime-frequency')?.value
             };
+
+            // Validate required fields
+            if (!supplementData.supplement) {
+                this.showNotification('Please select a supplement', 'error');
+                return;
+            }
+
+            if (!supplementData.dosage) {
+                this.showNotification('Please enter a dosage', 'error');
+                return;
+            }
 
             try {
                 await this.addSupplement(supplementData);
                 regimeForm.reset();
+                // Also clear the search input and hidden input
+                const searchInput = document.getElementById('regime-supplement-search');
+                if (searchInput) searchInput.value = '';
+                supplementHiddenInput.value = '';
+                
                 this.showNotification('Supplement added to regime!', 'success');
             } catch (error) {
                 this.showNotification(error.message, 'error');

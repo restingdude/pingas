@@ -1,6 +1,7 @@
 // Simple working version with database integration
 import APIClient from './api-client.js';
 import regimeManager from './regime-manager.js';
+import supplementSearch from './supplement-search.js';
 
 // Initialize API client
 const apiClient = new APIClient();
@@ -200,8 +201,9 @@ export async function initializeApp() {
         // Load existing personal data
         await loadPersonalData();
         
-        // Initialize regime manager
+        // Initialize regime manager and supplement search
         await regimeManager.init();
+        supplementSearch.init();
     }, 100);
     
     console.log('App initialization complete');
