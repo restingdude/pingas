@@ -47,6 +47,10 @@ document.getElementById('app').innerHTML = `
                 <span class="nav-icon">🏆</span>
                 <span class="nav-text">Achievements</span>
             </button>
+            <button class="nav-btn" data-view="sweet">
+                <span class="nav-icon">🤖</span>
+                <span class="nav-text">Sweet</span>
+            </button>
         </nav>
 
         <main class="game-main">
@@ -485,64 +489,172 @@ document.getElementById('app').innerHTML = `
             <!-- Regime View -->
             <div id="regime-view" class="view-container">
                 <div class="regime-container">
-                    <h2 class="view-title">My Supplement Regime</h2>
-
-                    <!-- Add Supplement to Regime -->
-                    <div class="add-regime-section">
-                        <h3>Add to Regime</h3>
-                        <form id="regime-form" class="regime-form">
-                            <div class="form-group">
-                                <label>Supplement</label>
-                                <div class="supplement-search-container">
-                                    <input type="text" id="regime-supplement-search" placeholder="Search supplements..." autocomplete="off">
-                                    <div id="supplement-suggestions" class="supplement-suggestions"></div>
-                                    <input type="hidden" id="regime-supplement" name="supplement" required>
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label>Daily Dosage</label>
-                                <input type="number" id="regime-dosage" placeholder="500" required>
-                                <select id="regime-unit">
-                                    <option value="mg">mg</option>
-                                    <option value="g">g</option>
-                                    <option value="iu">IU</option>
-                                    <option value="mcg">mcg</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label>Timing</label>
-                                <select id="regime-timing" required>
-                                    <option value="morning">Morning</option>
-                                    <option value="afternoon">Afternoon</option>
-                                    <option value="evening">Evening</option>
-                                    <option value="night">Night</option>
-                                    <option value="with-meals">With Meals</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label>Frequency</label>
-                                <select id="regime-frequency">
-                                    <option value="daily">Daily</option>
-                                    <option value="3-days-month">3 days/month (cycled)</option>
-                                    <option value="5-days-week">5 days/week</option>
-                                    <option value="loading">Loading phase</option>
-                                </select>
-                            </div>
-                            <button type="submit" class="add-regime-btn">Add to Regime</button>
-                        </form>
+                    <div class="regime-header">
+                        <h2 class="view-title">My Daily Protocol</h2>
+                        <button id="add-supplement-btn" class="add-supplement-btn">
+                            <span class="btn-icon">+</span>
+                            <span class="btn-text">Add Supplement</span>
+                        </button>
                     </div>
 
-                    <!-- Current Regime -->
-                    <div class="current-regime-section">
-                        <h3>Current Regime</h3>
-                        <div id="regime-list" class="regime-list">
-                            <!-- Regime items will be populated here -->
-                        </div>
-                        <div class="regime-stats">
-                            <h4>Expected Daily Boosts</h4>
-                            <div id="expected-boosts" class="expected-boosts-grid">
-                                <!-- Expected stat boosts will be shown here -->
+                    <!-- Daily Timeline -->
+                    <div class="daily-timeline">
+                        <!-- Morning Stack -->
+                        <div class="time-block" data-timing="morning">
+                            <div class="time-header">
+                                <div class="time-icon">🌅</div>
+                                <div class="time-info">
+                                    <h3>Morning Stack</h3>
+                                    <span class="time-label">Upon waking • 6:00-8:00 AM</span>
+                                </div>
+                                <div class="stack-count">
+                                    <span id="morning-count">0</span> supplements
+                                </div>
                             </div>
+                            <div class="supplements-grid" id="morning-supplements">
+                                <!-- Morning supplements will be populated here -->
+                            </div>
+                        </div>
+
+                        <!-- Evening Stack -->
+                        <div class="time-block" data-timing="night">
+                            <div class="time-header">
+                                <div class="time-icon">🌙</div>
+                                <div class="time-info">
+                                    <h3>Evening Stack</h3>
+                                    <span class="time-label">Before bed • 8:00-10:00 PM</span>
+                                </div>
+                                <div class="stack-count">
+                                    <span id="night-count">0</span> supplements
+                                </div>
+                            </div>
+                            <div class="supplements-grid" id="night-supplements">
+                                <!-- Evening supplements will be populated here -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Protocol Stats -->
+                    <div class="protocol-stats">
+                        <h3>Daily Impact</h3>
+                        <div id="expected-boosts" class="boosts-grid">
+                            <!-- Expected stat boosts will be shown here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Add Supplement Modal -->
+            <div id="add-supplement-modal" class="modal">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3>Add Supplement</h3>
+                        <button class="modal-close">&times;</button>
+                    </div>
+                    
+                    <div class="modal-body">
+                        <div id="regime-wizard" class="regime-wizard">
+                            <!-- Step 1: Search -->
+                            <div class="wizard-step active" data-step="1">
+                                <div class="step-header">
+                                    <span class="step-number">1</span>
+                                    <h4>Search Supplements & Nutrients</h4>
+                                </div>
+                                <div class="step-content">
+                                    <div class="supplement-search-container">
+                                        <input type="text" id="regime-supplement-search" placeholder="Type to search... (e.g., Vitamin D, NMN, Magnesium)" autocomplete="off">
+                                        <div id="supplement-suggestions" class="supplement-suggestions"></div>
+                                        <input type="hidden" id="regime-supplement" name="supplement">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Step 2: Dosage -->
+                            <div class="wizard-step" data-step="2">
+                                <div class="step-header">
+                                    <span class="step-number">2</span>
+                                    <h4>Set Dosage</h4>
+                                </div>
+                                <div class="step-content">
+                                    <div class="dosage-input-group">
+                                        <input type="number" id="regime-dosage" placeholder="1000" step="any">
+                                        <select id="regime-unit">
+                                            <option value="mg">mg</option>
+                                            <option value="g">g</option>
+                                            <option value="IU">IU</option>
+                                            <option value="mcg">mcg</option>
+                                        </select>
+                                    </div>
+                                    <small class="form-hint">Enter the exact amount per serving/capsule</small>
+                                </div>
+                            </div>
+
+                            <!-- Step 3: Timing -->
+                            <div class="wizard-step" data-step="3">
+                                <div class="step-header">
+                                    <span class="step-number">3</span>
+                                    <h4>When do you take it?</h4>
+                                </div>
+                                <div class="step-content">
+                                    <div class="timing-options">
+                                        <button type="button" class="timing-btn" data-timing="morning">
+                                            <span class="timing-icon">🌅</span>
+                                            <span class="timing-label">Morning</span>
+                                        </button>
+                                        <button type="button" class="timing-btn" data-timing="night">
+                                            <span class="timing-icon">🌙</span>
+                                            <span class="timing-label">Night</span>
+                                        </button>
+                                    </div>
+                                    <input type="hidden" id="regime-timing">
+                                </div>
+                            </div>
+
+                            <!-- Step 4: Final Details -->
+                            <div class="wizard-step" data-step="4">
+                                <div class="step-header">
+                                    <span class="step-number">4</span>
+                                    <h4>Final Details</h4>
+                                </div>
+                                <div class="step-content">
+                                    <div class="final-details">
+                                        <div class="detail-group">
+                                            <label>Servings per day</label>
+                                            <input type="number" id="regime-servings" placeholder="1" value="1" min="1" max="10">
+                                        </div>
+                                        <div class="detail-group">
+                                            <label>Frequency</label>
+                                            <select id="regime-frequency">
+                                                <option value="daily">Daily</option>
+                                                <option value="5-days-week">5 days/week</option>
+                                                <option value="3-days-month">3 days/month (cycled)</option>
+                                                <option value="loading">Loading phase</option>
+                                            </select>
+                                        </div>
+                                        <div class="detail-group">
+                                            <label>Notes (Optional)</label>
+                                            <input type="text" id="regime-notes" placeholder="e.g., Take with fat for absorption">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Navigation -->
+                            <div class="wizard-nav">
+                                <button type="button" id="prev-step" class="nav-btn prev-btn" style="display: none;">
+                                    <span>← Previous</span>
+                                </button>
+                                <button type="button" id="next-step" class="nav-btn next-btn">
+                                    <span>Next →</span>
+                                </button>
+                                <button type="button" id="add-regime" class="nav-btn add-btn" style="display: none;">
+                                    <span>Add to Regime</span>
+                                </button>
+                            </div>
+
+                            <!-- Hidden fields for optional data -->
+                            <input type="hidden" id="regime-brand-key" name="brandKey">
+                            <input type="hidden" id="regime-product-name" name="productName">
                         </div>
                     </div>
                 </div>
@@ -554,6 +666,37 @@ document.getElementById('app').innerHTML = `
                     <h2 class="view-title">Achievements</h2>
                     <div id="achievements-list" class="achievements-grid">
                         <!-- Achievements will be populated here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sweet AI Assistant View -->
+            <div id="sweet-view" class="view-container">
+                <div class="sweet-container">
+                    <div class="sweet-header">
+                        <h2 class="view-title">Sweet AI Assistant</h2>
+                        <div class="sweet-status">
+                            <span class="status-dot"></span>
+                            <span class="status-text">Online</span>
+                        </div>
+                    </div>
+                    <div class="sweet-chat-container">
+                        <div class="sweet-messages" id="sweet-messages">
+                            <div class="sweet-message assistant">
+                                <div class="message-avatar">🤖</div>
+                                <div class="message-content">
+                                    <div class="message-bubble">
+                                        Hi! I'm Sweet, your personal health optimization assistant. I can help you with supplement recommendations, answer questions about your regime, and provide personalized health insights. How can I help you today?
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="sweet-input-container">
+                            <input type="text" id="sweet-input" class="sweet-input" placeholder="Ask Sweet anything about health optimization...">
+                            <button id="sweet-send" class="sweet-send-btn">
+                                <span class="send-icon">➤</span>
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>

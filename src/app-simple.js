@@ -2,6 +2,7 @@
 import APIClient from './api-client.js';
 import regimeManager from './regime-manager.js';
 import supplementSearch from './supplement-search.js';
+import sweetAI from './sweet-ai.js';
 
 // Initialize API client
 const apiClient = new APIClient();
@@ -201,9 +202,10 @@ export async function initializeApp() {
         // Load existing personal data
         await loadPersonalData();
         
-        // Initialize regime manager and supplement search
+        // Initialize regime manager, supplement search, and Sweet AI
         await regimeManager.init();
         supplementSearch.init();
+        sweetAI.init();
     }, 100);
     
     console.log('App initialization complete');

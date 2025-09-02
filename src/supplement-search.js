@@ -1,5 +1,6 @@
 // Supplement Search Component
 import { SUPPLEMENT_DATABASE, SUPPLEMENT_CATEGORIES, getRecommendedDosage } from './supplement-database.js';
+import { MICRONUTRIENT_DATABASE, searchNutrients } from './micronutrient-database.js';
 
 class SupplementSearch {
     constructor() {
@@ -33,10 +34,11 @@ class SupplementSearch {
         });
 
         this.searchInput.addEventListener('focus', () => {
-            if (this.searchInput.value.trim() === '') {
-                this.showAllSupplements();
+            // Only show suggestions if there's already text in the input
+            if (this.searchInput.value.trim() !== '') {
+                this.filterSupplements(this.searchInput.value.toLowerCase());
+                this.showSuggestions();
             }
-            this.showSuggestions();
         });
 
         // Keyboard navigation
@@ -85,33 +87,49 @@ class SupplementSearch {
 
     filterSupplements(query) {
         if (query.trim() === '') {
-            this.showAllSupplements();
+            this.filteredSupplements = [];
+            this.selectedIndex = -1;
+            this.hideSuggestions();
             return;
         }
 
-        this.filteredSupplements = Object.entries(SUPPLEMENT_DATABASE)
+        // Search in supplement database
+        const supplementResults = Object.entries(SUPPLEMENT_DATABASE)
             .filter(([key, supplement]) => {
                 const searchText = `${supplement.name} ${supplement.description} ${supplement.category}`.toLowerCase();
                 return searchText.includes(query);
             })
-            .map(([key, supplement]) => ({ key, ...supplement }));
+            .map(([key, supplement]) => ({ key, ...supplement, source: 'supplement' }));
 
+        // Search in micronutrient database
+        const micronutrientResults = Object.entries(MICRONUTRIENT_DATABASE)
+            .filter(([key, nutrient]) => {
+                const searchText = `${nutrient.name} ${nutrient.primaryRole} ${nutrient.category}`.toLowerCase();
+                const formsText = nutrient.forms ? nutrient.forms.join(' ').toLowerCase() : '';
+                return searchText.includes(query) || formsText.includes(query);
+            })
+            .map(([key, nutrient]) => ({ 
+                key, 
+                name: nutrient.name,
+                description: nutrient.primaryRole,
+                category: nutrient.category,
+                ...nutrient, 
+                source: 'micronutrient' 
+            }));
+
+        // Combine and sort results (supplements first, then micronutrients)
+        this.filteredSupplements = [...supplementResults, ...micronutrientResults];
         this.selectedIndex = -1;
     }
 
-    showAllSupplements() {
-        this.filteredSupplements = Object.entries(SUPPLEMENT_DATABASE)
-            .map(([key, supplement]) => ({ key, ...supplement }));
-        this.selectedIndex = -1;
-    }
 
     showSuggestions() {
         if (this.filteredSupplements.length === 0) {
-            this.suggestionsContainer.innerHTML = '<div class="suggestion-item"><div class="suggestion-name">No supplements found</div></div>';
-        } else {
-            this.renderSuggestions();
+            this.hideSuggestions();
+            return;
         }
         
+        this.renderSuggestions();
         this.suggestionsContainer.classList.add('show');
         this.isOpen = true;
     }
@@ -123,34 +141,61 @@ class SupplementSearch {
     }
 
     renderSuggestions() {
-        // Group supplements by category
+        // Group supplements by category and source
         const groupedSupplements = this.filteredSupplements.reduce((groups, supplement) => {
             const category = supplement.category;
-            if (!groups[category]) {
-                groups[category] = [];
+            const source = supplement.source || 'supplement';
+            const groupKey = `${source}-${category}`;
+            
+            if (!groups[groupKey]) {
+                groups[groupKey] = {
+                    category,
+                    source,
+                    items: []
+                };
             }
-            groups[category].push(supplement);
+            groups[groupKey].items.push(supplement);
             return groups;
         }, {});
 
         let html = '';
         let itemIndex = 0;
 
-        Object.entries(groupedSupplements).forEach(([category, supplements]) => {
-            const categoryName = SUPPLEMENT_CATEGORIES[category] || category;
-            html += `<div class="suggestion-category">${categoryName}</div>`;
+        // Sort groups to show supplements first, then micronutrients
+        const sortedGroups = Object.entries(groupedSupplements).sort(([keyA, groupA], [keyB, groupB]) => {
+            if (groupA.source === 'supplement' && groupB.source === 'micronutrient') return -1;
+            if (groupA.source === 'micronutrient' && groupB.source === 'supplement') return 1;
+            return groupA.category.localeCompare(groupB.category);
+        });
 
-            supplements.forEach(supplement => {
-                const recommended = getRecommendedDosage(supplement.key, 'medium');
-                const dosageText = recommended ? `Recommended: ${recommended.min}-${recommended.max}${recommended.unit}` : '';
+        sortedGroups.forEach(([groupKey, group]) => {
+            const categoryName = SUPPLEMENT_CATEGORIES[group.category] || 
+                               group.category.charAt(0).toUpperCase() + group.category.slice(1);
+            const sourceLabel = group.source === 'micronutrient' ? ' (Nutrients)' : '';
+            
+            html += `<div class="suggestion-category">${categoryName}${sourceLabel}</div>`;
+
+            group.items.forEach(supplement => {
+                let dosageText = '';
+                
+                if (supplement.source === 'supplement') {
+                    const recommended = getRecommendedDosage(supplement.key, 'medium');
+                    dosageText = recommended ? `Recommended: ${recommended.min}-${recommended.max}${recommended.unit}` : '';
+                } else if (supplement.dosageRanges) {
+                    const medium = supplement.dosageRanges.medium;
+                    dosageText = `Range: ${medium.min}-${medium.max}${supplement.unit}`;
+                }
+                
+                const sourceIcon = supplement.source === 'micronutrient' ? '🧬' : '💊';
                 
                 html += `
                     <div class="suggestion-item ${this.selectedIndex === itemIndex ? 'selected' : ''}" 
                          data-key="${supplement.key}" 
                          data-index="${itemIndex}">
-                        <div class="suggestion-name">${supplement.name}</div>
+                        <div class="suggestion-name">${sourceIcon} ${supplement.name}</div>
                         <div class="suggestion-description">${supplement.description}</div>
                         ${dosageText ? `<div class="suggestion-dosage">${dosageText}</div>` : ''}
+                        ${supplement.evidence ? `<div class="suggestion-evidence">${supplement.evidence}</div>` : ''}
                     </div>
                 `;
                 itemIndex++;
@@ -198,17 +243,31 @@ class SupplementSearch {
         this.hiddenInput.value = supplement.key;
         this.hideSuggestions();
 
-        // Auto-fill recommended dosage
-        const recommended = getRecommendedDosage(supplement.key, 'medium');
-        if (recommended) {
+        // Auto-fill recommended dosage based on source
+        if (supplement.source === 'supplement') {
+            const recommended = getRecommendedDosage(supplement.key, 'medium');
+            if (recommended) {
+                const dosageInput = document.getElementById('regime-dosage');
+                const unitSelect = document.getElementById('regime-unit');
+                
+                if (dosageInput) {
+                    dosageInput.value = recommended.min;
+                }
+                if (unitSelect) {
+                    unitSelect.value = recommended.unit;
+                }
+            }
+        } else if (supplement.dosageRanges) {
+            // Auto-fill micronutrient dosage
+            const medium = supplement.dosageRanges.medium;
             const dosageInput = document.getElementById('regime-dosage');
             const unitSelect = document.getElementById('regime-unit');
             
-            if (dosageInput) {
-                dosageInput.value = recommended.min;
+            if (dosageInput && medium) {
+                dosageInput.value = medium.min;
             }
-            if (unitSelect) {
-                unitSelect.value = recommended.unit;
+            if (unitSelect && supplement.unit) {
+                unitSelect.value = supplement.unit;
             }
         }
 

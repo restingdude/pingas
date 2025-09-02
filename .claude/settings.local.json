@@ -3,7 +3,11 @@
     "allow": [
       "Bash(start index.html)",
       "Bash(npm install:*)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(node:*)",
+      "WebFetch(domain:blueprint.bryanjohnson.com)",
+      "WebFetch(domain:protocol.bryanjohnson.com)"
     ],
     "deny": [],
     "ask": []

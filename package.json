@@ -5,6 +5,8 @@
   "main": "index.html",
   "scripts": {
     "dev": "vite",
+    "dev:vercel": "vercel dev",
+    "dev:all": "concurrently \"npm run dev\" \"npm run dev:vercel\"",
     "build": "vite build",
     "preview": "vite preview"
   },
@@ -20,6 +22,7 @@
     "vite": "^5.0.0"
   },
   "dependencies": {
-    "@vercel/kv": "^3.0.0"
+    "@vercel/kv": "^3.0.0",
+    "playwright": "^1.55.0"
   }
 }
