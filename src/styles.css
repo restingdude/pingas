@@ -1677,7 +1677,7 @@ body {
     width: 90%;
     max-width: 450px;
     max-height: 70vh;
-    overflow-y: auto;
+    overflow: visible; /* Allow dropdown to extend outside */
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
     backdrop-filter: blur(40px);
 }
@@ -1734,6 +1734,8 @@ body {
 .wizard-step {
     display: none;
     animation: fadeIn 0.3s ease-in-out;
+    position: relative; /* For dropdown positioning */
+    overflow: visible; /* Allow dropdown to extend */
 }
 
 .wizard-step.active {
@@ -1909,6 +1911,7 @@ body {
     position: relative;
     width: 100%;
     margin-bottom: 0.5rem;
+    overflow: visible; /* Allow dropdown to extend beyond container */
 }
 
 #regime-supplement-search {
@@ -1950,9 +1953,9 @@ body {
     backdrop-filter: blur(40px);
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 20px;
-    max-height: 500px;
+    max-height: 400px;
     overflow-y: auto;
-    z-index: 1000;
+    z-index: 10000; /* High z-index to ensure it appears above modal */
     display: none;
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6),
                 0 8px 32px rgba(102, 126, 234, 0.1);
