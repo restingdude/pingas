@@ -64,7 +64,7 @@ body {
     align-items: center;
 }
 
-.streak-indicator, .level-badge, .total-score {
+.days-alive-indicator, .level-badge, .total-score {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -74,17 +74,17 @@ body {
     border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.streak-fire {
+.days-alive-icon {
     font-size: 1.5rem;
 }
 
-.streak-number, .level-number, .score-number {
+.days-alive-number, .level-number, .score-number {
     font-size: 1.5rem;
     font-weight: 700;
     color: #fff;
 }
 
-.streak-label, .level-label, .score-label {
+.days-alive-label, .level-label, .score-label {
     font-size: 0.7rem;
     color: #888;
     text-transform: uppercase;
@@ -146,7 +146,7 @@ body {
 /* Main Content */
 .game-main {
     flex: 1;
-    padding: 2rem;
+    padding: 1rem;
 }
 
 .view-container {
@@ -175,21 +175,21 @@ body {
 .stats-grid {
     display: flex;
     flex-direction: column;
-    gap: 2rem;
+    gap: 1rem;
 }
 
 .stat-category {
     background: rgba(255, 255, 255, 0.02);
-    border-radius: 16px;
-    padding: 2rem;
+    border-radius: 12px;
+    padding: 1rem;
     border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .category-title {
-    font-size: 1.25rem;
+    font-size: 1rem;
     font-weight: 600;
     color: #fff;
-    margin-bottom: 1.5rem;
+    margin-bottom: 0.75rem;
     text-align: center;
     text-transform: uppercase;
     letter-spacing: 0.05em;
@@ -197,17 +197,17 @@ body {
 
 .stats-row {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 1rem;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 0.5rem;
 }
 
 .stat-card {
     display: flex;
     align-items: center;
-    gap: 1rem;
-    padding: 1.5rem;
+    gap: 0.75rem;
+    padding: 0.75rem;
     background: rgba(255, 255, 255, 0.03);
-    border-radius: 12px;
+    border-radius: 8px;
     border: 1px solid rgba(255, 255, 255, 0.08);
     transition: all 0.3s ease;
     cursor: pointer;
@@ -220,14 +220,14 @@ body {
 }
 
 .stat-icon {
-    font-size: 2rem;
-    width: 3rem;
-    height: 3rem;
+    font-size: 1.25rem;
+    width: 2rem;
+    height: 2rem;
     display: flex;
     align-items: center;
     justify-content: center;
     background: rgba(255, 255, 255, 0.1);
-    border-radius: 10px;
+    border-radius: 6px;
     flex-shrink: 0;
 }
 
@@ -236,21 +236,21 @@ body {
 }
 
 .stat-name {
-    font-size: 0.9rem;
+    font-size: 0.75rem;
     font-weight: 600;
     color: #fff;
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.25rem;
     text-transform: uppercase;
     letter-spacing: 0.05em;
 }
 
 .stat-bar {
     width: 100%;
-    height: 8px;
+    height: 6px;
     background: rgba(255, 255, 255, 0.1);
-    border-radius: 4px;
+    border-radius: 3px;
     overflow: hidden;
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.25rem;
 }
 
 .stat-fill {
@@ -261,9 +261,187 @@ body {
 }
 
 .stat-value {
-    font-size: 0.8rem;
+    font-size: 0.7rem;
     color: #888;
     font-weight: 500;
+}
+
+.stat-boost {
+    color: #00C851;
+    font-weight: 600;
+    text-shadow: 0 0 8px rgba(0, 200, 81, 0.4);
+}
+
+.stat-card.boosted {
+    border-color: rgba(0, 200, 81, 0.3);
+    background: rgba(0, 200, 81, 0.05);
+}
+
+.stat-card.boosted .stat-fill {
+    background: linear-gradient(90deg, #00C851, #00A846);
+    box-shadow: 0 0 12px rgba(0, 200, 81, 0.3);
+}
+
+/* Stat Details Modal */
+.stat-modal {
+    display: none;
+    position: fixed;
+    z-index: 10000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(10px);
+}
+
+.stat-modal.show {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.stat-modal-content {
+    background: linear-gradient(135deg, #1e1e1e 0%, #2a2a2a 100%);
+    border-radius: 16px;
+    padding: 0;
+    width: 90%;
+    max-width: 500px;
+    max-height: 80vh;
+    overflow: hidden;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    animation: modalSlideIn 0.3s ease;
+}
+
+.stat-modal-header {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.stat-modal-header h3 {
+    margin: 0;
+    color: #fff;
+    font-size: 1.25rem;
+    font-weight: 600;
+}
+
+.stat-modal-close {
+    background: none;
+    border: none;
+    color: #ccc;
+    font-size: 1.5rem;
+    cursor: pointer;
+    padding: 0;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: all 0.2s ease;
+}
+
+.stat-modal-close:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: #fff;
+}
+
+.stat-modal-body {
+    padding: 1.5rem;
+    overflow-y: auto;
+    max-height: 60vh;
+}
+
+.stat-current-value {
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.current-label {
+    color: #ccc;
+    font-weight: 500;
+}
+
+#stat-current-display {
+    color: #fff;
+    font-weight: 600;
+    font-size: 1.1rem;
+}
+
+.affecting-supplements h4,
+.stat-explanation h4 {
+    color: #fff;
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding-bottom: 0.5rem;
+}
+
+.supplements-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+}
+
+.supplement-effect-item {
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 8px;
+    padding: 1rem;
+    border-left: 3px solid #00C851;
+}
+
+.supplement-name {
+    color: #fff;
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+}
+
+.supplement-dosage {
+    color: #ccc;
+    font-size: 0.85rem;
+    margin-bottom: 0.25rem;
+}
+
+.supplement-boost {
+    color: #00C851;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.stat-explanation p {
+    color: #ccc;
+    line-height: 1.5;
+    margin: 0;
+}
+
+.no-supplements-affecting {
+    text-align: center;
+    color: #888;
+    font-style: italic;
+    padding: 2rem;
+}
+
+@keyframes modalSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-50px) scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
 }
 
 /* Track View */
@@ -2014,6 +2192,11 @@ body {
     background: #00ff00;
     border-radius: 50%;
     animation: pulse 2s infinite;
+}
+
+.status-dot.development {
+    background: #FFB300;
+    animation: pulse 1.5s infinite;
 }
 
 .status-text {

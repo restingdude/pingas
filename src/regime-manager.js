@@ -3,6 +3,7 @@ import { SUPPLEMENT_DATABASE, calculateSupplementEffects, getSupplementByKey, ge
 import { BRAND_DATABASE, getBrandsBySupplementType, getProductByKey } from './brand-database.js';
 import { MICRONUTRIENT_DATABASE, calculateStatBoosts, searchNutrients, validateDosage, calculateXP } from './micronutrient-database.js';
 import APIClient from './api-client.js';
+import { updateStatsDisplay } from './app-simple.js';
 
 const apiClient = new APIClient();
 
@@ -151,6 +152,11 @@ class RegimeManager {
         });
 
         this.updateBoostsDisplay();
+        
+        // Update stats display in stats tab
+        if (typeof updateStatsDisplay === 'function') {
+            updateStatsDisplay();
+        }
     }
 
     // Update regime display in UI

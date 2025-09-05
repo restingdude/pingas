@@ -10,10 +10,10 @@ document.getElementById('app').innerHTML = `
                 <span class="subtitle">Health Optimization System</span>
             </div>
             <div class="header-stats">
-                <div class="streak-indicator">
-                    <span class="streak-fire">🔥</span>
-                    <span class="streak-number">0</span>
-                    <span class="streak-label">day streak</span>
+                <div class="days-alive-indicator">
+                    <span class="days-alive-icon">🌱</span>
+                    <span class="days-alive-number">-</span>
+                    <span class="days-alive-label">alive</span>
                 </div>
                 <div class="level-badge">
                     <span class="level-label">Level</span>
@@ -275,8 +275,8 @@ document.getElementById('app').innerHTML = `
                                 <input type="text" id="user-name" placeholder="Enter your name">
                             </div>
                             <div class="personal-card">
-                                <label>Age</label>
-                                <input type="number" id="user-age" placeholder="30" min="18" max="120">
+                                <label>Date of Birth</label>
+                                <input type="date" id="user-dob" placeholder="Select your birth date">
                             </div>
                             <div class="personal-card">
                                 <label>Gender</label>
@@ -624,8 +624,8 @@ document.getElementById('app').innerHTML = `
                     <div class="sweet-header">
                         <h2 class="view-title">Sweet AI Assistant</h2>
                         <div class="sweet-status">
-                            <span class="status-dot"></span>
-                            <span class="status-text">Online</span>
+                            <span class="status-dot development"></span>
+                            <span class="status-text">Development Mode</span>
                         </div>
                     </div>
                     <div class="sweet-chat-container">
@@ -633,8 +633,8 @@ document.getElementById('app').innerHTML = `
                             <div class="sweet-message assistant">
                                 <div class="message-avatar">🤖</div>
                                 <div class="message-content">
-                                    <div class="message-bubble">
-                                        Hi! I'm Sweet, your personal health optimization assistant. I can help you with supplement recommendations, answer questions about your regime, and provide personalized health insights. How can I help you today?
+                                    <div class="message-bubble" id="initial-sweet-message">
+                                        Hi! I'm Sweet, your personal health optimization assistant. I can help you with supplement recommendations, analyze your current regime, and provide personalized health insights. How can I help you optimize your health today?
                                     </div>
                                 </div>
                             </div>
@@ -649,6 +649,32 @@ document.getElementById('app').innerHTML = `
                 </div>
             </div>
         </main>
+
+        <!-- Stat Details Modal -->
+        <div id="stat-details-modal" class="stat-modal">
+            <div class="stat-modal-content">
+                <div class="stat-modal-header">
+                    <h3 id="stat-modal-title">Stat Details</h3>
+                    <button class="stat-modal-close">&times;</button>
+                </div>
+                <div class="stat-modal-body">
+                    <div class="stat-current-value">
+                        <span class="current-label">Current Value:</span>
+                        <span id="stat-current-display">--</span>
+                    </div>
+                    <div class="affecting-supplements">
+                        <h4>Supplements Affecting This Stat:</h4>
+                        <div id="affecting-supplements-list" class="supplements-list">
+                            <!-- Supplements will be populated here -->
+                        </div>
+                    </div>
+                    <div class="stat-explanation">
+                        <h4>About This Stat:</h4>
+                        <p id="stat-description">Stat description will appear here.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 `;
 

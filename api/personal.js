@@ -22,14 +22,16 @@ export default async function handler(req, res) {
 
       case 'POST':
         // Save personal data
+        console.log('Personal API - Received data:', req.body);
+        
         const {
-          name, age, gender, weight, height, activity,
+          name, dob, gender, weight, height, activity,
           goals, conditions, biomarkers, notes
         } = req.body;
 
         const personalProfile = {
           name: name || '',
-          age: age || '',
+          dob: dob || '',
           gender: gender || '',
           weight: weight || '',
           height: height || '',
@@ -41,7 +43,9 @@ export default async function handler(req, res) {
           lastUpdated: new Date().toISOString()
         };
 
+        console.log('Personal API - Saving profile:', personalProfile);
         await kv.set(userKey, personalProfile);
+        console.log('Personal API - Profile saved successfully');
         
         return res.status(200).json({ personalData: personalProfile });
 
