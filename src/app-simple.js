@@ -16,7 +16,6 @@ let gameState = {
         vision: 50, 'oral-health': 50, 'anti-inflammatory': 50
     },
     level: 1, xp: 0, streak: 0, lastActivity: null, achievements: [],
-    dailyQuests: { morning: false, perfect: false, streak: false },
     regime: []
 };
 
@@ -28,6 +27,9 @@ function initNavigation() {
         btn.addEventListener('click', function() {
             const view = this.getAttribute('data-view');
             console.log('Switching to:', view);
+            
+            // Save current tab to localStorage
+            localStorage.setItem('currentTab', view);
             
             // Hide all views
             document.querySelectorAll('.view-container').forEach(v => {
@@ -175,6 +177,31 @@ function showNotification(message, type) {
 // Initialize app
 export async function initializeApp() {
     console.log('App initializing with database integration...');
+    
+    // Restore the previously selected tab immediately (before navigation setup to avoid flash)
+    const savedTab = localStorage.getItem('currentTab') || 'stats';
+    
+    // Hide all views first
+    document.querySelectorAll('.view-container').forEach(v => {
+        v.style.display = 'none';
+        v.classList.remove('active');
+    });
+    
+    // Show the correct view immediately
+    const targetView = document.getElementById(savedTab + '-view');
+    if (targetView) {
+        targetView.style.display = 'block';
+        targetView.classList.add('active');
+    }
+    
+    // Set the correct nav button as active
+    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+    const activeBtn = document.querySelector(`.nav-btn[data-view="${savedTab}"]`);
+    if (activeBtn) {
+        activeBtn.classList.add('active');
+    }
+    
+    // Now initialize navigation (event listeners)
     initNavigation();
     
     // Load data from database

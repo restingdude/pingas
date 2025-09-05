@@ -27,7 +27,7 @@ document.getElementById('app').innerHTML = `
         </header>
 
         <nav class="game-nav">
-            <button class="nav-btn active" data-view="stats">
+            <button class="nav-btn" data-view="stats">
                 <span class="nav-icon">📊</span>
                 <span class="nav-text">Stats</span>
             </button>
@@ -38,10 +38,6 @@ document.getElementById('app').innerHTML = `
             <button class="nav-btn" data-view="regime">
                 <span class="nav-icon">📋</span>
                 <span class="nav-text">Regime</span>
-            </button>
-            <button class="nav-btn" data-view="quests">
-                <span class="nav-icon">🎯</span>
-                <span class="nav-text">Quests</span>
             </button>
             <button class="nav-btn" data-view="achievements">
                 <span class="nav-icon">🏆</span>
@@ -55,7 +51,7 @@ document.getElementById('app').innerHTML = `
 
         <main class="game-main">
             <!-- Stats View -->
-            <div id="stats-view" class="view-container active">
+            <div id="stats-view" class="view-container">
                 <div class="stats-grid">
                     <!-- Primary Stats -->
                     <div class="stat-category">
@@ -264,54 +260,6 @@ document.getElementById('app').innerHTML = `
                 </div>
             </div>
 
-
-            <!-- Quests View -->
-            <div id="quests-view" class="view-container">
-                <div class="quests-container">
-                    <h2 class="view-title">Daily Quests</h2>
-                    <div id="daily-quests" class="quests-list">
-                        <div class="quest-card">
-                            <div class="quest-icon">🌅</div>
-                            <div class="quest-info">
-                                <h3>Morning Foundation</h3>
-                                <p>Take your morning supplements before 9 AM</p>
-                                <div class="quest-progress">
-                                    <div class="quest-bar">
-                                        <div class="quest-fill" style="width: 0%"></div>
-                                    </div>
-                                    <span class="quest-xp">+50 XP</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="quest-card">
-                            <div class="quest-icon">🎯</div>
-                            <div class="quest-info">
-                                <h3>Perfect Timing</h3>
-                                <p>Take all supplements within optimal windows</p>
-                                <div class="quest-progress">
-                                    <div class="quest-bar">
-                                        <div class="quest-fill" style="width: 0%"></div>
-                                    </div>
-                                    <span class="quest-xp">+100 XP</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="quest-card">
-                            <div class="quest-icon">🔥</div>
-                            <div class="quest-info">
-                                <h3>Keep the Streak</h3>
-                                <p>Don't break your daily streak</p>
-                                <div class="quest-progress">
-                                    <div class="quest-bar">
-                                        <div class="quest-fill" style="width: 0%"></div>
-                                    </div>
-                                    <span class="quest-xp">+75 XP</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
 
             <!-- Personal View -->
             <div id="personal-view" class="view-container">

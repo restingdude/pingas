@@ -24,8 +24,7 @@ export default async function handler(req, res) {
     xp: 0,
     streak: 0,
     lastActivity: null,
-    achievements: [],
-    dailyQuests: { morning: false, perfect: false, streak: false }
+    achievements: []
   };
 
   try {
