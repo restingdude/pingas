@@ -43,10 +43,6 @@ document.getElementById('app').innerHTML = `
                 <span class="nav-icon">🏆</span>
                 <span class="nav-text">Achievements</span>
             </button>
-            <button class="nav-btn" data-view="sweet">
-                <span class="nav-icon">🤖</span>
-                <span class="nav-text">Sweet</span>
-            </button>
         </nav>
 
         <main class="game-main">
@@ -618,36 +614,6 @@ document.getElementById('app').innerHTML = `
                 </div>
             </div>
 
-            <!-- Sweet AI Assistant View -->
-            <div id="sweet-view" class="view-container">
-                <div class="sweet-container">
-                    <div class="sweet-header">
-                        <h2 class="view-title">Sweet AI Assistant</h2>
-                        <div class="sweet-status">
-                            <span class="status-dot development"></span>
-                            <span class="status-text">Development Mode</span>
-                        </div>
-                    </div>
-                    <div class="sweet-chat-container">
-                        <div class="sweet-messages" id="sweet-messages">
-                            <div class="sweet-message assistant">
-                                <div class="message-avatar">🤖</div>
-                                <div class="message-content">
-                                    <div class="message-bubble" id="initial-sweet-message">
-                                        Hi! I'm Sweet, your personal health optimization assistant. I can help you with supplement recommendations, analyze your current regime, and provide personalized health insights. How can I help you optimize your health today?
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="sweet-input-container">
-                            <input type="text" id="sweet-input" class="sweet-input" placeholder="Ask Sweet anything about health optimization...">
-                            <button id="sweet-send" class="sweet-send-btn">
-                                <span class="send-icon">➤</span>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
         </main>
 
         <!-- Stat Details Modal -->
@@ -672,6 +638,80 @@ document.getElementById('app').innerHTML = `
                         <h4>About This Stat:</h4>
                         <p id="stat-description">Stat description will appear here.</p>
                     </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dosage Edit Modal -->
+        <div id="dosage-edit-modal" class="modal">
+            <div class="modal-content small">
+                <div class="modal-header">
+                    <h3>Edit Dosage</h3>
+                    <button class="modal-close">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="supplement-info">
+                        <div class="supplement-name" id="edit-supplement-name">Supplement Name</div>
+                        <div class="current-dosage" id="current-dosage-display">Current: --</div>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-dosage">Dosage</label>
+                        <div class="dosage-input-group">
+                            <input type="number" id="edit-dosage" step="0.1" min="0">
+                            <select id="edit-unit">
+                                <option value="mg">mg</option>
+                                <option value="g">g</option>
+                                <option value="mcg">mcg</option>
+                                <option value="IU">IU</option>
+                                <option value="ml">ml</option>
+                                <option value="capsules">capsules</option>
+                                <option value="tablets">tablets</option>
+                                <option value="drops">drops</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-servings">Servings per day</label>
+                        <input type="number" id="edit-servings" min="1" value="1">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" id="cancel-dosage-edit">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="save-dosage-edit">Save</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sweet AI FAB Button -->
+        <button id="sweet-fab" class="sweet-fab">
+            <span class="fab-icon">🤖</span>
+        </button>
+
+        <!-- Sweet AI Chat Window -->
+        <div id="sweet-chat-window" class="sweet-chat-window">
+            <div class="sweet-window-header">
+                <div class="sweet-window-title">
+                    <span class="sweet-avatar">🤖</span>
+                    <span class="sweet-title-text">Sweet AI</span>
+                </div>
+                <div class="sweet-status">
+                    <span class="status-dot development"></span>
+                    <span class="status-text">Development Mode</span>
+                </div>
+                <div class="sweet-window-controls">
+                    <button class="sweet-clear" id="sweet-clear" title="Clear chat">🗑️</button>
+                    <button class="sweet-close" id="sweet-close" title="Close">&times;</button>
+                </div>
+            </div>
+            <div class="sweet-chat-container">
+                <div class="sweet-messages" id="sweet-messages">
+                    <!-- Messages will be populated by JavaScript -->
+                </div>
+                <div class="sweet-input-container">
+                    <input type="text" id="sweet-input" class="sweet-input" placeholder="Ask about supplements or your regime...">
+                    <button id="sweet-send" class="sweet-send-btn">
+                        <span class="send-icon">➤</span>
+                    </button>
                 </div>
             </div>
         </div>

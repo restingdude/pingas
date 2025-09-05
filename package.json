@@ -4,9 +4,10 @@
   "description": "A supplement tracking application with stats and insights",
   "main": "index.html",
   "scripts": {
-    "dev": "vite",
-    "dev:vercel": "vercel dev",
-    "dev:full": "concurrently \"vercel dev --listen 3000\" \"vite --port 5173\"",
+    "dev": "concurrently \"npm run dev:frontend\" \"npm run dev:api\"",
+    "dev:frontend": "vite",
+    "dev:api": "vercel dev --listen 3001",
+    "dev:ai": "vercel dev",
     "build": "vite build",
     "preview": "vite preview"
   },

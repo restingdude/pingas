@@ -17,6 +17,7 @@ class RegimeManager {
     async init() {
         await this.loadRegime();
         this.setupEventListeners();
+        this.setupDosageEditListeners();
     }
 
     // Load regime from database
@@ -112,6 +113,62 @@ class RegimeManager {
         return newItem;
     }
 
+    // Update existing supplement in regime
+    async updateSupplement(itemId, supplementData) {
+        const { supplement, dosage, unit, timing, frequency, brandKey, productName, servings, notes } = supplementData;
+        
+        // Find the existing item
+        const existingItemIndex = this.regime.findIndex(item => item.id === itemId);
+        if (existingItemIndex === -1) {
+            throw new Error('Supplement not found in regime');
+        }
+        
+        // Check if supplement already exists at the same timing (excluding the current item)
+        const exists = this.regime.find(item => 
+            item.supplement === supplement && 
+            item.timing === timing && 
+            item.id !== itemId
+        );
+        if (exists) {
+            const supplementInfo = getSupplementByKey(supplement);
+            const nutrientInfo = MICRONUTRIENT_DATABASE[supplement];
+            throw new Error(`${supplementInfo?.name || nutrientInfo?.name || supplement} is already in your ${timing} stack`);
+        }
+        
+        // Create updated item
+        const updatedItem = {
+            ...this.regime[existingItemIndex], // Keep existing properties like id and dateAdded
+            supplement,
+            dosage: parseFloat(dosage),
+            unit,
+            timing,
+            frequency: frequency || 'daily',
+            servings: parseInt(servings) || 1,
+            notes: notes || '',
+            brandKey: brandKey || '',
+            productName: productName || '',
+            dateModified: new Date().toISOString()
+        };
+        
+        try {
+            // Update in database
+            const result = await apiClient.updateInRegime(itemId, updatedItem);
+            this.regime = result.regime;
+            
+            // Update localStorage as backup
+            localStorage.setItem('regime', JSON.stringify(this.regime));
+        } catch (error) {
+            console.error('Error updating supplement in regime, using local storage:', error);
+            // Update in local array
+            this.regime[existingItemIndex] = updatedItem;
+            localStorage.setItem('regime', JSON.stringify(this.regime));
+        }
+
+        this.updateRegimeDisplay();
+        this.calculateExpectedBoosts();
+        return updatedItem;
+    }
+
     // Remove supplement from regime
     async removeSupplement(itemId) {
         try {
@@ -129,6 +186,211 @@ class RegimeManager {
         this.updateRegimeDisplay();
         this.calculateExpectedBoosts();
     }
+
+    // Edit supplement dosage
+    editSupplement(itemId) {
+        const item = this.regime.find(supplement => supplement.id === itemId);
+        if (!item) {
+            console.error('Supplement not found in regime');
+            return;
+        }
+
+        this.openDosageEditModal(item);
+    }
+
+    // Open dosage edit modal
+    openDosageEditModal(item) {
+        const modal = document.getElementById('dosage-edit-modal');
+        const nameDisplay = document.getElementById('edit-supplement-name');
+        const currentDosageDisplay = document.getElementById('current-dosage-display');
+        const dosageInput = document.getElementById('edit-dosage');
+        const unitSelect = document.getElementById('edit-unit');
+        const servingsInput = document.getElementById('edit-servings');
+
+        if (!modal || !nameDisplay || !dosageInput || !unitSelect || !servingsInput) {
+            console.error('Dosage edit modal elements not found');
+            return;
+        }
+
+        // Get supplement info for display
+        const supplementInfo = getSupplementByKey(item.supplement);
+        const nutrientInfo = MICRONUTRIENT_DATABASE[item.supplement];
+        const displayName = item.productName || supplementInfo?.name || nutrientInfo?.name || item.supplement;
+
+        // Calculate daily total for display with robust error handling
+        console.log('Raw item data:', item);
+        
+        // Handle different possible data formats
+        let dosage = parseFloat(item.dosage) || parseFloat(item.dailyTotal) || 0;
+        let servings = parseInt(item.servings) || 1;
+        let unit = item.unit || 'mg';
+        
+        // If we have dailyTotal but no individual dosage, calculate backwards
+        if (!item.dosage && item.dailyTotal && servings > 1) {
+            dosage = parseFloat(item.dailyTotal) / servings;
+        } else if (!item.dosage && item.dailyTotal) {
+            dosage = parseFloat(item.dailyTotal);
+        }
+        
+        const dailyTotal = dosage * servings;
+        const servingsText = servings > 1 ? ` × ${servings}` : '';
+        const currentDosageText = dosage > 0 ? `Current: ${dailyTotal} ${unit}${servingsText}` : 'Current: Not set';
+
+        // Populate the form
+        console.log('Processed data:', { name: displayName, dosage, unit, servings, dailyTotal, currentDosageText });
+        nameDisplay.textContent = displayName;
+        if (currentDosageDisplay) {
+            currentDosageDisplay.textContent = currentDosageText;
+            console.log('Set current dosage display to:', currentDosageText);
+        } else {
+            console.error('Current dosage display element not found');
+        }
+        
+        dosageInput.value = dosage || '';
+        unitSelect.value = unit;
+        servingsInput.value = servings;
+
+        // Store item ID for saving
+        modal.dataset.editId = item.id;
+
+        // Show modal
+        modal.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+
+        // Focus the dosage input and select all text for easy editing
+        setTimeout(() => {
+            dosageInput.focus();
+            dosageInput.select();
+        }, 100);
+    }
+
+    // Setup dosage edit modal listeners
+    setupDosageEditListeners() {
+        const modal = document.getElementById('dosage-edit-modal');
+        const cancelBtn = document.getElementById('cancel-dosage-edit');
+        const saveBtn = document.getElementById('save-dosage-edit');
+        const closeBtn = modal?.querySelector('.modal-close');
+
+        if (!modal) return;
+
+        // Close modal function
+        const closeModal = () => {
+            modal.style.display = 'none';
+            document.body.style.overflow = 'auto';
+            delete modal.dataset.editId;
+        };
+
+        // Cancel button
+        if (cancelBtn) {
+            cancelBtn.addEventListener('click', closeModal);
+        }
+
+        // Close button (X)
+        if (closeBtn) {
+            closeBtn.addEventListener('click', closeModal);
+        }
+
+        // Click outside to close
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                closeModal();
+            }
+        });
+
+        // ESC key to close
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && modal.style.display === 'flex') {
+                closeModal();
+            }
+        });
+
+        // Save button
+        if (saveBtn) {
+            saveBtn.addEventListener('click', async () => {
+                await this.saveDosageEdit();
+            });
+        }
+
+        // Enter key to save
+        const dosageInput = document.getElementById('edit-dosage');
+        const servingsInput = document.getElementById('edit-servings');
+        
+        [dosageInput, servingsInput].forEach(input => {
+            if (input) {
+                input.addEventListener('keypress', async (e) => {
+                    if (e.key === 'Enter') {
+                        await this.saveDosageEdit();
+                    }
+                });
+            }
+        });
+    }
+
+    // Save dosage edit
+    async saveDosageEdit() {
+        const modal = document.getElementById('dosage-edit-modal');
+        const dosageInput = document.getElementById('edit-dosage');
+        const unitSelect = document.getElementById('edit-unit');
+        const servingsInput = document.getElementById('edit-servings');
+
+        const editId = modal?.dataset.editId;
+        if (!editId) return;
+
+        const newDosage = parseFloat(dosageInput.value);
+        const newUnit = unitSelect.value;
+        const newServings = parseInt(servingsInput.value) || 1;
+
+        if (!newDosage || newDosage <= 0) {
+            this.showNotification('Please enter a valid dosage', 'error');
+            return;
+        }
+
+        try {
+            // Find the item and create updated data
+            const existingItem = this.regime.find(item => item.id === editId);
+            if (!existingItem) {
+                throw new Error('Supplement not found');
+            }
+
+            const updatedItem = {
+                ...existingItem,
+                dosage: newDosage,
+                unit: newUnit,
+                servings: newServings,
+                dateModified: new Date().toISOString()
+            };
+
+            // Update the item
+            const existingItemIndex = this.regime.findIndex(item => item.id === editId);
+            if (existingItemIndex !== -1) {
+                try {
+                    // Try to update in database
+                    const result = await apiClient.updateInRegime(editId, updatedItem);
+                    this.regime = result.regime;
+                    localStorage.setItem('regime', JSON.stringify(this.regime));
+                } catch (error) {
+                    console.error('Error updating in database, using local storage:', error);
+                    // Update locally
+                    this.regime[existingItemIndex] = updatedItem;
+                    localStorage.setItem('regime', JSON.stringify(this.regime));
+                }
+
+                this.updateRegimeDisplay();
+                this.calculateExpectedBoosts();
+                
+                // Close modal
+                modal.style.display = 'none';
+                document.body.style.overflow = 'auto';
+                delete modal.dataset.editId;
+
+                this.showNotification('Dosage updated successfully', 'success');
+            }
+        } catch (error) {
+            console.error('Error saving dosage edit:', error);
+            this.showNotification(error.message || 'Error updating dosage', 'error');
+        }
+    }
+
 
     // Calculate expected stat boosts from current regime
     calculateExpectedBoosts() {
@@ -211,7 +473,7 @@ class RegimeManager {
                 const dailyTotal = item.dailyTotal || (item.dosage * (item.servings || 1));
                 
                 return `
-                    <div class="supplement-card" data-id="${item.id}">
+                    <div class="supplement-card clickable" data-id="${item.id}" onclick="regimeManager.editSupplement('${item.id}')">
                         <div class="supplement-header">
                             <div class="supplement-name">
                                 ${item.productName || supplementInfo?.name || nutrientInfo?.name || item.supplement}
@@ -224,7 +486,7 @@ class RegimeManager {
                             ${item.frequency === 'daily' ? 'Daily' : item.frequency}
                         </div>
                         ${item.notes ? `<div class="supplement-notes">${item.notes}</div>` : ''}
-                        <button class="remove-supplement-btn" onclick="regimeManager.removeSupplement('${item.id}')" title="Remove from regime">×</button>
+                        <button class="remove-supplement-btn" onclick="event.stopPropagation(); regimeManager.removeSupplement('${item.id}')" title="Remove from regime">×</button>
                     </div>
                 `;
             }).join('');
@@ -516,8 +778,17 @@ class RegimeManager {
         }
 
         try {
-            console.log('Calling addSupplement...');
-            await this.addSupplement(supplementData);
+            // Check if we're editing an existing supplement
+            const modal = document.getElementById('add-supplement-modal');
+            const editId = modal?.dataset.editId;
+            
+            if (editId) {
+                console.log('Updating existing supplement...');
+                await this.updateSupplement(editId, supplementData);
+            } else {
+                console.log('Adding new supplement...');
+                await this.addSupplement(supplementData);
+            }
             
             // Ensure regime view stays active
             const regimeView = document.getElementById('regime-view');
@@ -537,7 +808,6 @@ class RegimeManager {
             // No need to reset here - happens when modal opens
             
             // Close modal
-            const modal = document.getElementById('add-supplement-modal');
             if (modal) {
                 modal.classList.remove('show');
                 document.body.style.overflow = 'auto';
